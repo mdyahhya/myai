@@ -233,7 +233,7 @@
         if (!SR) return;
         recognition = new SR();
         recognition.lang = currentLang;
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
 
         recognition.onstart = () => {
