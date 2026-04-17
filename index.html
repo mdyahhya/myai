@@ -193,6 +193,14 @@
 
     // ── NEW SILENT WHISPER SYSTEM ──
     async function startSilentRecording() {
+        if (!pwaListening) return;
+        
+        // Don't record if Nemo is speaking to avoid hearing himself
+        if (window.speechSynthesis.speaking) {
+            setTimeout(startSilentRecording, 1000);
+            return;
+        }
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
@@ -202,9 +210,14 @@
             
             mediaRecorder.onstop = async () => {
                 if (chunks.length === 0) return;
+                // Discard if Nemo started speaking during this chunk
+                if (window.speechSynthesis.speaking) {
+                    if (pwaListening) startSilentRecording();
+                    return;
+                }
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 await sendToWhisper(blob);
-                if (pwaListening) startSilentRecording(); // Continuous
+                if (pwaListening) startSilentRecording(); 
             };
 
             mediaRecorder.start();
@@ -212,10 +225,9 @@
             document.getElementById('state-label').textContent = 'SILENTLY LISTENING...';
             document.getElementById('mic-btn').classList.add('active');
 
-            // Collect 4 seconds of audio at a time for live feel
             setTimeout(() => {
                 if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-            }, 4000);
+            }, 3000); // Shorter bursts for faster response
 
         } catch (err) {
             console.error('Silent Mic Access Denied', err);
@@ -291,13 +303,27 @@
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
         const voices = window.speechSynthesis.getVoices();
-        utter.voice = voices.find(v => (v.name.includes('Male') || v.name.includes('David')) && v.lang.startsWith('en')) || voices[0];
+        
+        // Priority: Male Hindi -> Male English -> David -> Any Male
+        const maleVoice = voices.find(v => (v.name.includes('Male') && (v.lang.startsWith('hi') || v.lang.startsWith('en')))) ||
+                          voices.find(v => v.name.includes('David')) ||
+                          voices.find(v => v.name.includes('India') && v.name.includes('Male')) ||
+                          voices[0];
+                          
+        utter.voice = maleVoice;
         utter.lang = currentLang;
-        utter.onstart = () => { document.getElementById('state-label').textContent = 'SPEAKING...'; };
+        utter.pitch = 0.85; // Lower pitch for masculine feel
+        utter.rate = 1.05; // Slightly faster for efficiency
+        
+        utter.onstart = () => { 
+            document.getElementById('state-label').textContent = 'NEMO SPEAKING...';
+            // Stop recorder to prevent hearing himself
+            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+        };
         utter.onend = () => {
             if (pwaListening) {
                 document.getElementById('state-label').textContent = 'SILENTLY LISTENING...';
-                startSilentRecording();
+                setTimeout(startSilentRecording, 500); 
             } else {
                 document.getElementById('state-label').textContent = 'IDLE';
             }
@@ -348,7 +374,10 @@
     }
 
     window.onload = () => {
-        if (localStorage.getItem('nemo_auth') === 'true') document.getElementById('auth-overlay').classList.add('hidden');
+        if (localStorage.getItem('nemo_auth') === 'true') {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            addMessage('ai', 'Salam! Nemo AI system active. How can I help?');
+        }
         updateStats();
         // Double Tap to Wake
         document.addEventListener('dblclick', () => { if (!pwaListening) toggleMic(); showToast('NEMO SILENTLY AWAKE'); });
