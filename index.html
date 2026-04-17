@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Nemo — AI Mobile Assistant</title>
+    <title>Nemo — Personal AI Dashboard</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -37,273 +37,101 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font-body);
+        html, body {
+            height: 100%; width: 100%; overflow: hidden;
+            background: var(--bg); color: var(--text); font-family: var(--font-body);
         }
 
         body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
+            content: ''; position: fixed; inset: 0;
             background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 200, 255, 0.01) 2px, rgba(0, 200, 255, 0.01) 4px);
-            pointer-events: none;
-            z-index: 9999;
+            pointer-events: none; z-index: 9999;
         }
 
         #app {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100vh;
-            height: 100dvh;
-            max-width: 480px;
-            margin: 0 auto;
-            background: #000;
-            overflow: hidden;
-            position: relative;
+            display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh;
+            max-width: 480px; margin: 0 auto; background: #000; overflow: hidden; position: relative;
         }
 
         /* ── AUTH ── */
         #auth-overlay {
-            position: absolute;
-            inset: 0;
-            background: #000;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            position: absolute; inset: 0; background: #000; z-index: 1000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
         }
-
         #auth-overlay.hidden { display: none; }
-
-        .auth-card {
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-        }
-
-        .auth-logo {
-            font-family: var(--font-hud);
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 8px;
-            margin-bottom: 30px;
-            text-shadow: var(--glow);
-        }
-
-        .auth-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px;
-            color: #fff;
-            text-align: center;
-            font-family: var(--font-mono);
-            outline: none;
-            margin-bottom: 12px;
-        }
-
-        .auth-btn {
-            width: 100%;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 10px;
-            padding: 14px;
-            font-family: var(--font-hud);
-            font-weight: 700;
-            cursor: pointer;
-        }
+        .auth-logo { font-family: var(--font-hud); font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: 8px; margin-bottom: 30px; text-shadow: var(--glow); text-align: center;}
+        .auth-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 10px; padding: 14px; color: #fff; text-align: center; font-family: var(--font-mono); outline: none; margin-bottom: 12px; }
+        .auth-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 10px; padding: 14px; font-family: var(--font-hud); font-weight: 700; cursor: pointer; }
 
         /* ── TOP BAR ── */
         #topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 16px; border-bottom: 1px solid var(--border); z-index: 50; flex-shrink: 0;
         }
+        .logo-text { font-family: var(--font-hud); font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 3px; }
+        #menu-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text-dim); cursor: pointer; }
 
-        .logo-text {
-            font-family: var(--font-hud);
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 3px;
+        /* ── NAVIGATION MENU ── */
+        #nav-menu {
+            position: absolute; top: 60px; right: 16px; background: #080f18; border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; z-index: 100; min-width: 180px; display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
+        #nav-menu.open { display: block; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; color: var(--text-dim); text-decoration: none; font-family: var(--font-hud); font-size: 14px; border-bottom: 1px solid rgba(0,200,255,0.05); }
+        .nav-item:hover { background: rgba(0,200,255,0.05); color: var(--accent); }
+        .nav-item.active { color: var(--accent); background: rgba(0,200,255,0.08); }
 
-        #lang-toggle {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--accent);
-            cursor: pointer;
-        }
+        /* ── DASHBOARD HEADER ── */
+        #dash-header { padding: 10px 16px; flex-shrink: 0; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; }
+        .stat-num { font-family: var(--font-mono); font-size: 18px; color: var(--accent); }
+        .stat-lbl { font-family: var(--font-mono); font-size: 7px; color: var(--text-dim); letter-spacing: 1.5px; margin-top: 2px; }
 
-        /* ── AVATAR AREA ── */
+        /* ── AVATAR ── */
         #avatar-area {
-            height: 220px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: radial-gradient(circle at center, rgba(0, 200, 255, 0.05) 0%, transparent 70%);
+            height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
         }
-
-        .orbit-container {
-            width: 140px;
-            height: 140px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .orbit-ring {
-            position: absolute;
-            border: 1px solid rgba(0, 200, 255, 0.15);
-            border-radius: 50%;
-            animation: rotate 10s linear infinite;
-        }
-
+        .orbit-container { width: 120px; height: 120px; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;}
+        .orbit-ring { position: absolute; border: 1px solid rgba(0, 200, 255, 0.1); border-radius: 50%; animation: rotate 12s linear infinite; }
         .orbit-ring:nth-child(1) { width: 100%; height: 100%; }
-        .orbit-ring:nth-child(2) { width: 120%; height: 120%; animation-direction: reverse; }
-        
+        .orbit-ring:nth-child(2) { width: 130%; height: 130%; animation-direction: reverse; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
         .avatar-core {
-            width: 100px;
-            height: 100px;
-            background: #000;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.4);
-            z-index: 20;
-            cursor: pointer;
+            width: 85px; height: 85px; background: #000; border-radius: 50%; border: 2px solid var(--accent);
+            overflow: hidden; position: relative; box-shadow: 0 0 30px rgba(0, 200, 255, 0.3); z-index: 20;
         }
+        #nemo-video { width: 140%; height: 140%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: cover; pointer-events: none; }
+        #state-label { font-family: var(--font-mono); font-size: 9px; margin-top: 10px; color: var(--text-dim); letter-spacing: 2px; }
 
-        #nemo-video {
-            width: 140%;
-            height: 140%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            pointer-events: none;
-        }
+        /* ── QUICK CHIPS ── */
+        #quick-chips { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 12px; scrollbar-width: none; flex-shrink: 0; }
+        #quick-chips::-webkit-scrollbar { display: none; }
+        .chip { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 6px 14px; font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); cursor: pointer;}
+        .chip:active { background: var(--accent); color: #000; }
 
-        #state-label {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            margin-top: 15px;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-        }
+        /* ── CHAT ── */
+        #chat-thread { flex: 1; overflow-y: auto; padding: 0 16px 10px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; animation: fadeIn 0.3s ease-out; position: relative;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .msg.user { align-self: flex-end; background: var(--accent2); color: #fff; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); color: #fff; border-bottom-left-radius: 4px; }
+        .msg.ai::before { content: 'NEMO'; position: absolute; top: -14px; left: 4px; font-family: var(--font-mono); font-size: 7px; color: var(--accent); letter-spacing: 1px; }
 
-        .active-listening #state-label { color: var(--accent3); text-shadow: 0 0 8px var(--accent3); }
-
-        /* ── MESSAGES ── */
-        #messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .msg {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 14px;
-            line-height: 1.5;
-            animation: fadeUp 0.3s ease-out;
-        }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .msg.user {
-            align-self: flex-end;
-            background: var(--accent2);
-            color: #fff;
-            border-bottom-right-radius: 2px;
-        }
-
-        .msg.ai {
-            align-self: flex-start;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: #fff;
-            border-bottom-left-radius: 2px;
-        }
-
-        /* ── INPUT AREA ── */
+        /* ── INPUT ── */
         #input-area {
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.95);
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            padding-bottom: env(safe-area-inset-bottom, 12px);
+            padding: 12px 16px; background: rgba(0,0,0,0.96); border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom, 12px); flex-shrink: 0;
         }
+        #text-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 22px; padding: 10px 18px; color: #fff; outline: none; font-size: 14px; }
+        #mic-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;}
+        #mic-btn.active { background: var(--accent3); color: #000; box-shadow: 0 0 15px var(--accent3); }
 
-        #text-input {
-            flex: 1;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 10px 16px;
-            color: #fff;
-            outline: none;
-            font-size: 14px;
-        }
-
-        #mic-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        #mic-btn.active {
-            background: var(--accent3);
-            color: #000;
-            box-shadow: 0 0 15px var(--accent3);
-        }
-
-        #toast {
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 255, 170, 0.2); border: 1px solid var(--accent3);
-            border-radius: 8px; padding: 8px 16px; font-family: var(--font-mono); font-size: 11px;
-            color: var(--accent3); opacity: 0; transition: opacity 0.3s; z-index: 500;
-        }
+        /* ── MISC ── */
+        #lang-overlay { position: absolute; top: 12px; right: 55px; z-index: 60; }
+        #lang-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-family: var(--font-mono); font-size: 9px; color: var(--accent); cursor: pointer; }
+        #toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(0, 255, 170, 0.2); border: 1px solid var(--accent3); border-radius: 8px; padding: 8px 16px; font-family: var(--font-mono); font-size: 11px; color: var(--accent3); opacity: 0; transition: opacity 0.3s; z-index: 500; pointer-events: none; }
         #toast.show { opacity: 1; }
     </style>
 </head>
@@ -312,29 +140,65 @@
 <div id="app">
     <div id="auth-overlay">
         <div class="auth-card">
-            <div class="auth-logo">NEMO</div>
-            <input type="password" id="pass-input" class="auth-input" placeholder="ACCESS KEY" onkeydown="if(event.key==='Enter')checkAuth()">
+            <div class="auth-logo">NEMO AI</div>
+            <input type="password" id="pass-input" class="auth-input" placeholder="ACCESS KEY">
             <button class="auth-btn" onclick="checkAuth()">AUTHENTICATE</button>
         </div>
     </div>
 
     <div id="topbar">
-        <div class="logo-text">NEMO AI</div>
-        <div id="lang-toggle" onclick="toggleLang()">EN | HI</div>
+        <div class="logo-text">MISSION CONTROL</div>
+        <button id="menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+
+    <div id="nav-menu">
+        <a class="nav-item active" href="index.html">🤖 AI CHAT</a>
+        <a class="nav-item" href="data.html">🧠 KNOWLEDGE</a>
+        <a class="nav-item" href="schedule.html">📅 SCHEDULE</a>
+        <a class="nav-item" href="tasks.html">✅ TASKS</a>
+        <a class="nav-item" href="history.html">📜 HISTORY</a>
+    </div>
+
+    <div id="dash-header">
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-num" id="stat-pending">0</div>
+                <div class="stat-lbl">PENDING</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="stat-today">0</div>
+                <div class="stat-lbl">TODAY</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="stat-total">0</div>
+                <div class="stat-lbl">OBJECTIVES</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lang-overlay">
+        <div id="lang-badge" onclick="toggleLang()">LANG: EN</div>
     </div>
 
     <div id="avatar-area">
-        <div class="orbit-container">
+        <div class="orbit-container" onclick="toggleMic()">
             <div class="orbit-ring"></div>
             <div class="orbit-ring"></div>
-            <div class="avatar-core" onclick="toggleMic()">
-                <video id="nemo-video" src="aitan.mp4" autoplay loop muted playsinline></video>
+            <div class="avatar-core">
+                <video id="nemo-video" src="aitan.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
             </div>
         </div>
         <div id="state-label">IDLE</div>
     </div>
 
-    <div id="messages"></div>
+    <div id="quick-chips">
+        <div class="chip" onclick="sendMessage('What is my schedule for today?')">📅 TODAY SCHEDULE</div>
+        <div class="chip" onclick="sendMessage('What are my tasks for tomorrow?')">✅ TOMORROW TASKS</div>
+        <div class="chip" onclick="sendMessage('How many total objectives do I have?')">📊 STATS PULSE</div>
+        <div class="chip" onclick="window.location.href='tasks.html'">➕ NEW TASK</div>
+    </div>
+
+    <div id="chat-thread"></div>
 
     <div id="input-area">
         <input type="text" id="text-input" placeholder="Talk to Nemo..." onkeydown="if(event.key==='Enter')sendMessage()">
@@ -346,17 +210,22 @@
 
 <script>
     const LS = {
-        get: k => JSON.parse(localStorage.getItem(k)),
+        get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } },
         set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
     };
 
-    let recognition, isListening = false, pwaListening = false, currentLang = 'en-US';
+    let recognition, isListening = false, pwaListening = false, currentLang = 'en-US', menuOpen = false;
+
+    function toggleMenu() {
+        menuOpen = !menuOpen;
+        document.getElementById('nav-menu').classList.toggle('open', menuOpen);
+    }
 
     function toggleLang() {
         currentLang = currentLang === 'en-US' ? 'hi-IN' : 'en-US';
-        document.getElementById('lang-toggle').textContent = currentLang === 'en-US' ? 'EN | HI' : 'HI | EN';
+        document.getElementById('lang-badge').textContent = currentLang === 'en-US' ? 'LANG: EN' : 'LANG: HI';
         if (recognition) recognition.lang = currentLang;
-        showToast('LANG: ' + (currentLang === 'en-US' ? 'ENGLISH' : 'HINDI'));
+        showToast('LANGUAGE SET TO ' + (currentLang === 'en-US' ? 'ENGLISH' : 'HINDI'));
     }
 
     function setupSpeech() {
@@ -370,7 +239,6 @@
         recognition.onstart = () => {
             isListening = true;
             document.getElementById('state-label').textContent = 'LISTENING...';
-            document.body.classList.add('active-listening');
             document.getElementById('mic-btn').classList.add('active');
         };
 
@@ -379,9 +247,8 @@
             document.getElementById('mic-btn').classList.remove('active');
             if (pwaListening && !window.speechSynthesis.speaking) {
                 setTimeout(() => { if (pwaListening) recognition.start(); }, 300);
-            } else if (!pwaListening) {
+            } else {
                 document.getElementById('state-label').textContent = 'IDLE';
-                document.body.classList.remove('active-listening');
             }
         };
 
@@ -390,7 +257,7 @@
             document.getElementById('text-input').value = transcript;
             
             if (e.results[e.results.length-1].isFinal) {
-                if (transcript.includes('bye') || transcript.includes('bye nemo') || transcript.includes('alvida')) {
+                if (transcript.includes('bye') || transcript.includes('bye nemo') || transcript.includes('goodbye')) {
                     pwaListening = false;
                     recognition.stop();
                     speak("Goodbye! I'm here if you need me.");
@@ -409,14 +276,30 @@
         input.value = '';
         addMessage('user', msg);
         
+        // Prepare data context for Nemo
+        const tasks = LS.get('nemo_tasks') || [];
+        const schedule = LS.get('nemo_schedule') || [];
         const history = LS.get('nemo_chat_history') || [];
+        
+        const context = `
+Current Data Context:
+Tasks: ${JSON.stringify(tasks.slice(0,10))}
+Schedule: ${JSON.stringify(schedule.slice(0,10))}
+Today's Date: ${new Date().toDateString()}
+        `;
+        
         history.push({ role: 'user', content: msg });
         
         try {
             document.getElementById('state-label').textContent = 'THINKING...';
             const res = await fetch('/.netlify/functions/groq', {
                 method: 'POST',
-                body: JSON.stringify({ messages: history.slice(-6) })
+                body: JSON.stringify({ 
+                    messages: [
+                        { role: 'system', content: context },
+                        ...history.slice(-6)
+                    ]
+                })
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
@@ -426,7 +309,7 @@
             LS.set('nemo_chat_history', history.slice(-20));
             speak(reply);
         } catch (e) {
-            addMessage('ai', 'Connection lost.');
+            addMessage('ai', 'Connection issue detected.');
         } finally {
             if (!pwaListening) document.getElementById('state-label').textContent = 'IDLE';
         }
@@ -436,8 +319,9 @@
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
         const voices = window.speechSynthesis.getVoices();
-        utter.voice = voices.find(v => v.name.includes('Male') || v.name.includes('David')) || voices[0];
+        utter.voice = voices.find(v => (v.name.includes('Male') || v.name.includes('David')) && v.lang.startsWith('en')) || voices[0];
         utter.lang = currentLang;
+        utter.rate = 1.0;
         utter.onstart = () => {
             document.getElementById('state-label').textContent = 'SPEAKING...';
             if (isListening) recognition.stop();
@@ -461,7 +345,7 @@
         const div = document.createElement('div');
         div.className = 'msg ' + role;
         div.textContent = text;
-        const box = document.getElementById('messages');
+        const box = document.getElementById('chat-thread');
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
@@ -473,8 +357,18 @@
         if (data.authorized) {
             localStorage.setItem('nemo_auth', 'true');
             document.getElementById('auth-overlay').classList.add('hidden');
-            setTimeout(() => { pwaListening = true; recognition.start(); }, 1000);
+            setTimeout(() => { pwaListening = true; recognition.start(); }, 1200);
         } else alert('Access Denied');
+    }
+
+    function updateStats() {
+        const tasks = LS.get('nemo_tasks') || [];
+        const schedule = LS.get('nemo_schedule') || [];
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('stat-total').textContent = tasks.length;
+        document.getElementById('stat-pending').textContent = tasks.filter(t => !t.done).length;
+        document.getElementById('stat-today').textContent = schedule.filter(s => s.date === todayStr).length;
     }
 
     function showToast(m) {
@@ -485,10 +379,25 @@
     window.onload = () => {
         if (localStorage.getItem('nemo_auth') === 'true') {
             document.getElementById('auth-overlay').classList.add('hidden');
-            setTimeout(() => { pwaListening = true; recognition.start(); }, 1500);
+            setTimeout(() => { pwaListening = true; if(recognition) recognition.start(); }, 2000);
         }
         setupSpeech();
-        document.addEventListener('dblclick', () => { if (!pwaListening) { pwaListening = true; recognition.start(); showToast('NEMO AWAKE'); } });
+        updateStats();
+        
+        document.addEventListener('dblclick', () => { 
+            if (!pwaListening) { 
+                pwaListening = true; 
+                recognition.start(); 
+                showToast('NEMO AWAKENED'); 
+            } 
+        });
+
+        document.addEventListener('click', e => {
+            if (menuOpen && !e.target.closest('#nav-menu') && !e.target.closest('#menu-btn')) {
+                menuOpen = false;
+                document.getElementById('nav-menu').classList.remove('open');
+            }
+        });
     };
 </script>
 </body>
