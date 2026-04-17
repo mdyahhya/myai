@@ -191,48 +191,34 @@
         showToast('LANGUAGE SET TO ' + (currentLang === 'en-US' ? 'ENGLISH' : 'HINDI'));
     }
 
-    // ── NEW SILENT WHISPER SYSTEM ──
+    // ── NEW SILENT WHISPER SYSTEM (CONTINUOUS) ──
     async function startSilentRecording() {
-        if (!pwaListening) return;
-        
-        // Don't record if Nemo is speaking to avoid hearing himself
-        if (window.speechSynthesis.speaking) {
-            setTimeout(startSilentRecording, 1000);
-            return;
-        }
+        if (!pwaListening || (mediaRecorder && mediaRecorder.state === 'recording')) return;
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             chunks = [];
             
-            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-            
-            mediaRecorder.onstop = async () => {
-                if (chunks.length === 0) return;
-                // Discard if Nemo started speaking during this chunk
-                if (window.speechSynthesis.speaking) {
-                    if (pwaListening) startSilentRecording();
-                    return;
+            mediaRecorder.ondataavailable = async e => {
+                if (e.data.size > 0) {
+                    // Send chunk to Whisper immediately if not Nemo speaking
+                    if (!window.speechSynthesis.speaking) {
+                        await sendToWhisper(e.data);
+                    }
                 }
-                const blob = new Blob(chunks, { type: 'audio/webm' });
-                await sendToWhisper(blob);
-                if (pwaListening) startSilentRecording(); 
             };
+            
+            // Record in 3-second 'slices' without stopping the mic
+            mediaRecorder.start(3000); 
 
-            mediaRecorder.start();
             isListening = true;
             document.getElementById('state-label').textContent = 'SILENTLY LISTENING...';
             document.getElementById('mic-btn').classList.add('active');
 
-            setTimeout(() => {
-                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-            }, 3000); // Shorter bursts for faster response
-
         } catch (err) {
             console.error('Silent Mic Access Denied', err);
             isListening = false;
-            pwaListening = false;
         }
     }
 
@@ -317,13 +303,10 @@
         
         utter.onstart = () => { 
             document.getElementById('state-label').textContent = 'NEMO SPEAKING...';
-            // Stop recorder to prevent hearing himself
-            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
         };
         utter.onend = () => {
             if (pwaListening) {
                 document.getElementById('state-label').textContent = 'SILENTLY LISTENING...';
-                setTimeout(startSilentRecording, 500); 
             } else {
                 document.getElementById('state-label').textContent = 'IDLE';
             }
