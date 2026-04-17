@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Tan — History</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/jpeg" href="tanai.jpg">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400&display=swap');
+
+        :root {
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --surface2: #121212;
+            --border: rgba(0, 200, 255, 0.15);
+            --accent: #00c8ff;
+            --accent2: #0066ff;
+            --accent3: #00ffaa;
+            --danger: #ff3366;
+            --text: #ffffff;
+            --text-dim: #a0b0c0;
+            --font-hud: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+            --font-body: 'Exo 2', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 200, 255, 0.012) 2px, rgba(0, 200, 255, 0.012) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        /* TOP BAR */
+        #topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px 8px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(2, 4, 8, 0.95);
+            backdrop-filter: blur(8px);
+        }
+
+        .page-title {
+            font-family: var(--font-hud);
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+        }
+
+        .page-sub {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+        }
+
+        #menu-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* NAV */
+        #nav-menu {
+            position: fixed;
+            top: 52px;
+            right: 14px;
+            background: #080f18;
+            border: 1px solid rgba(0, 200, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 100;
+            min-width: 190px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            display: none;
+        }
+
+        #nav-menu.open {
+            display: block;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            font-family: var(--font-hud);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0, 200, 255, 0.06);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 200, 255, 0.07);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(0, 200, 255, 0.06);
+        }
+
+        /* CONTENT */
+        #content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        /* STATS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.4);
+        }
+
+        .stat-lbl {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+        }
+
+        /* SEARCH */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        #search-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 13px 11px 36px;
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #search-input:focus {
+            border-color: rgba(0, 200, 255, 0.35);
+        }
+
+        #search-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* SESSION GROUPS */
+        .session-group {
+            margin-bottom: 20px;
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            border-left: 2px solid rgba(0, 200, 255, 0.3);
+        }
+
+        .session-date {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .session-count {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-left: auto;
+        }
+
+        /* MESSAGE BUBBLES */
+        .h-msg {
+            display: flex;
+            margin-bottom: 8px;
+            animation: msg-in 0.2s ease-out;
+        }
+
+        @keyframes msg-in {
+            from {
+                opacity: 0;
+                transform: translateY(4px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .h-msg.user {
+            justify-content: flex-end;
+        }
+
+        .h-msg.ai {
+            justify-content: flex-start;
+        }
+
+        .h-bubble {
+            max-width: 85%;
+            padding: 10px 13px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.55;
+            position: relative;
+        }
+
+        .h-msg.user .h-bubble {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 102, 255, 0.1));
+            border: 1px solid rgba(0, 102, 255, 0.25);
+            color: #d0e8ff;
+            border-bottom-right-radius: 3px;
+        }
+
+        .h-msg.ai .h-bubble {
+            background: linear-gradient(135deg, rgba(0, 200, 255, 0.07), rgba(0, 200, 255, 0.03));
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-bottom-left-radius: 3px;
+        }
+
+        .h-msg.ai .h-bubble::before {
+            content: 'TAN';
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .h-msg.user .h-bubble::after {
+            content: 'YOU';
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: rgba(0, 200, 255, 0.5);
+            letter-spacing: 2px;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        /* SEARCH HIGHLIGHT */
+        .highlight {
+            background: rgba(0, 200, 255, 0.2);
+            color: var(--accent);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            line-height: 2.2;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+            display: block;
+        }
+
+        /* ACTIONS */
+        .actions-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 200, 255, 0.06);
+        }
+
+        .action-btn.danger {
+            border-color: rgba(255, 51, 102, 0.2);
+        }
+
+        .action-btn.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(255, 51, 102, 0.07);
+        }
+
+        /* LOAD MORE */
+        #load-more {
+            display: block;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        #load-more:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* TOAST */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 255, 170, 0.12);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--accent3);
+            letter-spacing: 1.5px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <div id="topbar">
+            <div>
+                <div class="page-title">HISTORY</div>
+                <div class="page-sub">CONVERSATION LOG</div>
+            </div>
+            <button id="menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+
+        <div id="nav-menu">
+            <a class="nav-item" href="index.html"><span>🤖</span>AI CHAT</a>
+            <a class="nav-item" href="data.html"><span>🧠</span>KNOWLEDGE</a>
+            <a class="nav-item" href="schedule.html"><span>📅</span>SCHEDULE</a>
+            <a class="nav-item" href="tasks.html"><span>✅</span>TASKS</a>
+            <a class="nav-item active" href="history.html"><span>📜</span>HISTORY</a>
+        </div>
+
+        <div id="content">
+
+            <!-- STATS -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-messages">0</div>
+                    <div class="stat-lbl">MESSAGES</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-exchanges">0</div>
+                    <div class="stat-lbl">EXCHANGES</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-days">0</div>
+                    <div class="stat-lbl">DAYS</div>
+                </div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search conversation history…"
+                    oninput="onSearch(this.value)" />
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="actions-row">
+                <button class="action-btn" onclick="exportHistory()">⬇️ EXPORT JSON</button>
+                <button class="action-btn" onclick="scrollToBottom()">↓ LATEST</button>
+                <button class="action-btn danger" onclick="clearHistory()">🗑️ CLEAR ALL</button>
+            </div>
+
+            <!-- HISTORY LIST -->
+            <div id="history-list"></div>
+            <button id="load-more" style="display:none" onclick="loadMore()">LOAD MORE MESSAGES</button>
+
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const LS = {
+            get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
+        };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW Registered');
+                }).catch(err => console.log('SW Reg Failed', err));
+            });
+        }
+
+        let menuOpen = false;
+        let allHistory = [];
+        let displayedCount = 0;
+        const PAGE_SIZE = 40;
+        let searchQuery = '';
+
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            document.getElementById('nav-menu').classList.toggle('open', menuOpen);
+        }
+        document.addEventListener('click', e => {
+            if (menuOpen && !e.target.closest('#nav-menu') && !e.target.closest('#menu-btn')) {
+                menuOpen = false; document.getElementById('nav-menu').classList.remove('open');
+            }
+        });
+
+        function loadHistory() {
+            allHistory = LS.get('tan_chat_history') || [];
+            updateStats();
+            displayedCount = 0;
+            renderHistory();
+        }
+
+        function updateStats() {
+            const total = allHistory.length;
+            const userMsgs = allHistory.filter(m => m.role === 'user').length;
+            const exchanges = Math.min(userMsgs, allHistory.filter(m => m.role === 'assistant').length);
+
+            // Count unique days
+            const days = new Set(allHistory.map(m => {
+                if (m.timestamp) return new Date(m.timestamp).toDateString();
+                return 'unknown';
+            })).size;
+
+            document.getElementById('stat-messages').textContent = total;
+            document.getElementById('stat-exchanges').textContent = exchanges;
+            document.getElementById('stat-days').textContent = days;
+        }
+
+        function groupByDate(messages) {
+            const groups = {};
+            messages.forEach((m, idx) => {
+                const date = m.timestamp ? new Date(m.timestamp).toDateString() : 'Stored Messages';
+                if (!groups[date]) groups[date] = [];
+                groups[date].push({ ...m, _idx: idx });
+            });
+            return groups;
+        }
+
+        function highlight(text, query) {
+            if (!query) return escHtml(text);
+            const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return escHtml(text).replace(new RegExp(`(${escaped})`, 'gi'), '<span class="highlight">$1</span>');
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+
+            let filtered = allHistory;
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = allHistory.filter(m => m.content && m.content.toLowerCase().includes(q));
+            }
+
+            if (!filtered.length) {
+                list.innerHTML = `<div class="empty-state"><span class="empty-icon">💬</span>${searchQuery ? 'NO RESULTS FOUND' : 'NO CONVERSATION HISTORY YET'}<br>${searchQuery ? 'TRY A DIFFERENT SEARCH' : 'START CHATTING WITH TAN'}</div>`;
+                document.getElementById('load-more').style.display = 'none';
+                return;
+            }
+
+            const toShow = filtered.slice(0, PAGE_SIZE);
+            displayedCount = toShow.length;
+
+            const groups = groupByDate(toShow);
+
+            list.innerHTML = Object.entries(groups).map(([date, msgs]) => `
+      <div class="session-group">
+        <div class="session-header">
+          <span class="session-date">${date}</span>
+          <span class="session-count">${msgs.length} messages</span>
+        </div>
+        ${msgs.map(m => renderMessage(m)).join('')}
+      </div>`).join('');
+
+            document.getElementById('load-more').style.display =
+                filtered.length > PAGE_SIZE ? 'block' : 'none';
+        }
+
+        function renderMessage(m) {
+            const role = m.role === 'user' ? 'user' : 'ai';
+            const content = highlight(m.content || '', searchQuery);
+            return `
+      <div class="h-msg ${role}">
+        <div class="h-bubble">${content}</div>
+      </div>`;
+        }
+
+        function loadMore() {
+            let filtered = allHistory;
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = allHistory.filter(m => m.content && m.content.toLowerCase().includes(q));
+            }
+
+            const newItems = filtered.slice(displayedCount, displayedCount + PAGE_SIZE);
+            displayedCount += newItems.length;
+
+            if (newItems.length) {
+                const groups = groupByDate(newItems);
+                const list = document.getElementById('history-list');
+                const html = Object.entries(groups).map(([date, msgs]) => `
+        <div class="session-group">
+          <div class="session-header">
+            <span class="session-date">${date}</span>
+            <span class="session-count">${msgs.length} messages</span>
+          </div>
+          ${msgs.map(m => renderMessage(m)).join('')}
+        </div>`).join('');
+                list.insertAdjacentHTML('beforeend', html);
+            }
+
+            if (displayedCount >= filtered.length) {
+                document.getElementById('load-more').style.display = 'none';
+            }
+        }
+
+        let searchTimeout;
+        function onSearch(val) {
+            searchQuery = val.trim();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                displayedCount = 0;
+                renderHistory();
+            }, 300);
+        }
+
+        function clearHistory() {
+            if (!allHistory.length) { showToast('HISTORY ALREADY EMPTY'); return; }
+            if (!confirm(`Delete all ${allHistory.length} messages? This cannot be undone.`)) return;
+            localStorage.removeItem('tan_chat_history');
+            allHistory = [];
+            displayedCount = 0;
+            updateStats();
+            renderHistory();
+            showToast('HISTORY CLEARED');
+        }
+
+        function exportHistory() {
+            if (!allHistory.length) { showToast('NO HISTORY TO EXPORT'); return; }
+            const data = JSON.stringify(allHistory, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tan-history-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('HISTORY EXPORTED');
+        }
+
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function escHtml(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2200);
+        }
+
+        loadHistory();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "Tan AI",
+  "short_name": "Tan",
+  "description": "Tan — Personal AI Assistant",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#00c8ff",
+  "icons": [
+    {
+      "src": "tanai.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "tanai.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
