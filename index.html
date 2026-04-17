@@ -147,7 +147,7 @@
     </div>
 
     <div id="topbar">
-        <div class="logo-text">MISSION CONTROL</div>
+        <div class="logo-text">NEMO AI</div>
         <button id="menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 
@@ -245,22 +245,29 @@
         recognition.onend = () => {
             isListening = false;
             document.getElementById('mic-btn').classList.remove('active');
-            if (pwaListening && !window.speechSynthesis.speaking) {
-                setTimeout(() => { if (pwaListening) recognition.start(); }, 300);
+            if (pwaListening) {
+                // Only restart if it actually died, but try to keep it continuous
+                setTimeout(() => { if (pwaListening && !isListening) recognition.start(); }, 300);
             } else {
                 document.getElementById('state-label').textContent = 'IDLE';
             }
         };
 
         recognition.onresult = e => {
-            const transcript = e.results[e.results.length-1][0].transcript.toLowerCase();
+            // Ignore results if Nemo is talking to avoid hearing himself
+            if (window.speechSynthesis.speaking) return;
+
+            const results = Array.from(e.results);
+            const transcript = results[results.length-1][0].transcript.toLowerCase().trim();
+            const isFinal = e.results[e.results.length - 1].isFinal;
+            
             document.getElementById('text-input').value = transcript;
             
-            if (e.results[e.results.length-1].isFinal) {
+            if (isFinal && transcript.length > 1) {
                 if (transcript.includes('bye') || transcript.includes('bye nemo') || transcript.includes('goodbye')) {
                     pwaListening = false;
                     recognition.stop();
-                    speak("Goodbye! I'm here if you need me.");
+                    speak("Goodbye!");
                     return;
                 }
                 sendMessage(transcript);
@@ -324,13 +331,13 @@ Today's Date: ${new Date().toDateString()}
         utter.rate = 1.0;
         utter.onstart = () => {
             document.getElementById('state-label').textContent = 'SPEAKING...';
-            if (isListening) recognition.stop();
+            // We no longer stop recognition here to avoid the "ting" sound
         };
         utter.onend = () => {
-            if (pwaListening) {
-                setTimeout(() => { if (pwaListening) recognition.start(); }, 500);
-            } else {
+            if (!pwaListening) {
                 document.getElementById('state-label').textContent = 'IDLE';
+            } else {
+                document.getElementById('state-label').textContent = 'LISTENING...';
             }
         };
         window.speechSynthesis.speak(utter);
