@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Tan — History</title>
+    <title>Nemo â€” History</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/jpeg" href="tanai.jpg">
+    <link rel="icon" type="image/jpeg" href="Nemoai.jpg">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400&display=swap');
 
@@ -306,7 +306,7 @@
         }
 
         .h-msg.ai .h-bubble::before {
-            content: 'TAN';
+            content: 'Nemo';
             display: block;
             font-family: var(--font-mono);
             font-size: 8px;
@@ -448,15 +448,15 @@
                 <div class="page-title">HISTORY</div>
                 <div class="page-sub">CONVERSATION LOG</div>
             </div>
-            <button id="menu-btn" onclick="toggleMenu()">☰</button>
+            <button id="menu-btn" onclick="toggleMenu()">â˜°</button>
         </div>
 
         <div id="nav-menu">
-            <a class="nav-item" href="index.html"><span>🤖</span>AI CHAT</a>
-            <a class="nav-item" href="data.html"><span>🧠</span>KNOWLEDGE</a>
-            <a class="nav-item" href="schedule.html"><span>📅</span>SCHEDULE</a>
-            <a class="nav-item" href="tasks.html"><span>✅</span>TASKS</a>
-            <a class="nav-item active" href="history.html"><span>📜</span>HISTORY</a>
+            <a class="nav-item" href="index.html"><span>ðŸ¤–</span>AI CHAT</a>
+            <a class="nav-item" href="data.html"><span>ðŸ§ </span>KNOWLEDGE</a>
+            <a class="nav-item" href="schedule.html"><span>ðŸ“…</span>SCHEDULE</a>
+            <a class="nav-item" href="tasks.html"><span>âœ…</span>TASKS</a>
+            <a class="nav-item active" href="history.html"><span>ðŸ“œ</span>HISTORY</a>
         </div>
 
         <div id="content">
@@ -479,16 +479,16 @@
 
             <!-- SEARCH -->
             <div class="search-wrap">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Search conversation history…"
+                <span class="search-icon">ðŸ”</span>
+                <input type="text" id="search-input" placeholder="Search conversation historyâ€¦"
                     oninput="onSearch(this.value)" />
             </div>
 
             <!-- ACTIONS -->
             <div class="actions-row">
-                <button class="action-btn" onclick="exportHistory()">⬇️ EXPORT JSON</button>
-                <button class="action-btn" onclick="scrollToBottom()">↓ LATEST</button>
-                <button class="action-btn danger" onclick="clearHistory()">🗑️ CLEAR ALL</button>
+                <button class="action-btn" onclick="exportHistory()">â¬‡ï¸ EXPORT JSON</button>
+                <button class="action-btn" onclick="scrollToBottom()">â†“ LATEST</button>
+                <button class="action-btn danger" onclick="clearHistory()">ðŸ—‘ï¸ CLEAR ALL</button>
             </div>
 
             <!-- HISTORY LIST -->
@@ -531,7 +531,7 @@
         });
 
         function loadHistory() {
-            allHistory = LS.get('tan_chat_history') || [];
+            allHistory = LS.get('Nemo_chat_history') || [];
             updateStats();
             displayedCount = 0;
             renderHistory();
@@ -540,7 +540,7 @@
         function updateStats() {
             const total = allHistory.length;
             const userMsgs = allHistory.filter(m => m.role === 'user').length;
-            const exchanges = Math.min(userMsgs, allHistory.filter(m => m.role === 'assistant').length);
+            const exchanges = Math.min(userMsgs, allHistory.filter(m => m.role === 'assisNemot').length);
 
             // Count unique days
             const days = new Set(allHistory.map(m => {
@@ -579,7 +579,7 @@
             }
 
             if (!filtered.length) {
-                list.innerHTML = `<div class="empty-state"><span class="empty-icon">💬</span>${searchQuery ? 'NO RESULTS FOUND' : 'NO CONVERSATION HISTORY YET'}<br>${searchQuery ? 'TRY A DIFFERENT SEARCH' : 'START CHATTING WITH TAN'}</div>`;
+                list.innerHTML = `<div class="empty-state"><span class="empty-icon">ðŸ’¬</span>${searchQuery ? 'NO RESULTS FOUND' : 'NO CONVERSATION HISTORY YET'}<br>${searchQuery ? 'TRY A DIFFERENT SEARCH' : 'START CHATTING WITH Nemo'}</div>`;
                 document.getElementById('load-more').style.display = 'none';
                 return;
             }
@@ -653,7 +653,7 @@
         function clearHistory() {
             if (!allHistory.length) { showToast('HISTORY ALREADY EMPTY'); return; }
             if (!confirm(`Delete all ${allHistory.length} messages? This cannot be undone.`)) return;
-            localStorage.removeItem('tan_chat_history');
+            localStorage.removeItem('Nemo_chat_history');
             allHistory = [];
             displayedCount = 0;
             updateStats();
@@ -668,7 +668,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `tan-history-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `Nemo-history-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('HISTORY EXPORTED');

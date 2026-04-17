@@ -16,6 +16,11 @@ exports.handler = async (event, context) => {
       };
     }
 
+    const systemMessage = {
+      role: "system",
+      content: "You are Nemo, a high-tech, personal AI assistant. Your responses must be extremely concise (max 2 sentences) unless asked for details. You speak English and Hindi fluently. If the user speaks Hindi, respond in Hindi or Hinglish. Your tone is helpful, futuristic, and efficient. Avoid using many emojis in voice mode."
+    };
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -24,9 +29,9 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({
         model: model || "llama-3.1-8b-instant",
-        messages,
-        max_tokens: max_tokens || 500,
-        temperature: temperature || 0.75
+        messages: [systemMessage, ...messages],
+        max_tokens: max_tokens || 250,
+        temperature: 0.7
       })
     });
 

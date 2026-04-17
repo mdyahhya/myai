@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Tan — Tasks</title>
+    <title>Nemo â€” Tasks</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/jpeg" href="tanai.jpg">
+    <link rel="icon" type="image/jpeg" href="Nemoai.jpg">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400&display=swap');
 
@@ -250,15 +250,15 @@
             <div class="page-title">TASKS</div>
             <div class="page-sub">OBJECTIVE TRACKER</div>
         </div>
-        <button id="menu-btn" onclick="toggleMenu()">☰</button>
+        <button id="menu-btn" onclick="toggleMenu()">â˜°</button>
     </div>
 
     <div id="nav-menu">
-        <a class="nav-item" href="index.html"><span>🤖</span>AI CHAT</a>
-        <a class="nav-item" href="data.html"><span>🧠</span>KNOWLEDGE</a>
-        <a class="nav-item" href="schedule.html"><span>📅</span>SCHEDULE</a>
-        <a class="nav-item active" href="tasks.html"><span>✅</span>TASKS</a>
-        <a class="nav-item" href="history.html"><span>📜</span>HISTORY</a>
+        <a class="nav-item" href="index.html"><span>ðŸ¤–</span>AI CHAT</a>
+        <a class="nav-item" href="data.html"><span>ðŸ§ </span>KNOWLEDGE</a>
+        <a class="nav-item" href="schedule.html"><span>ðŸ“…</span>SCHEDULE</a>
+        <a class="nav-item active" href="tasks.html"><span>âœ…</span>TASKS</a>
+        <a class="nav-item" href="history.html"><span>ðŸ“œ</span>HISTORY</a>
     </div>
 
     <div id="content">
@@ -278,7 +278,7 @@
         </div>
 
         <div class="add-task-wrap">
-            <input type="text" id="task-input" placeholder="New objective…" onkeydown="if(event.key==='Enter')addTask()">
+            <input type="text" id="task-input" placeholder="New objectiveâ€¦" onkeydown="if(event.key==='Enter')addTask()">
             <button class="add-btn" onclick="addTask()">ADD OBJECTIVE</button>
         </div>
 
@@ -308,7 +308,7 @@
     }
 
     function loadTasks() {
-        const tasks = LS.get('tan_tasks') || [];
+        const tasks = LS.get('Nemo_tasks') || [];
         const pending = tasks.filter(t => !t.done);
         const done = tasks.filter(t => t.done);
         
@@ -319,9 +319,9 @@
         const list = document.getElementById('task-list');
         list.innerHTML = tasks.sort((a,b) => a.done - b.done || b.id - a.id).map(t => `
             <div class="task-item ${t.done ? 'done' : ''}">
-                <div class="task-check" onclick="toggleTask(${t.id})">${t.done ? '✓' : ''}</div>
+                <div class="task-check" onclick="toggleTask(${t.id})">${t.done ? 'âœ“' : ''}</div>
                 <div class="task-text">${t.text}</div>
-                <div class="task-del" onclick="deleteTask(${t.id})">✕</div>
+                <div class="task-del" onclick="deleteTask(${t.id})">âœ•</div>
             </div>
         `).join('');
     }
@@ -331,26 +331,26 @@
         const text = input.value.trim();
         if (!text) return;
 
-        const tasks = LS.get('tan_tasks') || [];
+        const tasks = LS.get('Nemo_tasks') || [];
         tasks.push({ id: Date.now(), text, done: false });
-        LS.set('tan_tasks', tasks);
+        LS.set('Nemo_tasks', tasks);
         input.value = '';
         loadTasks();
         showToast('TASK ADDED');
     }
 
     function toggleTask(id) {
-        const tasks = LS.get('tan_tasks') || [];
+        const tasks = LS.get('Nemo_tasks') || [];
         const task = tasks.find(t => t.id === id);
         if (task) task.done = !task.done;
-        LS.set('tan_tasks', tasks);
+        LS.set('Nemo_tasks', tasks);
         loadTasks();
     }
 
     function deleteTask(id) {
-        let tasks = LS.get('tan_tasks') || [];
+        let tasks = LS.get('Nemo_tasks') || [];
         tasks = tasks.filter(t => t.id !== id);
-        LS.set('tan_tasks', tasks);
+        LS.set('Nemo_tasks', tasks);
         loadTasks();
         showToast('TASK DELETED');
     }

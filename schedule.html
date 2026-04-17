@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Tan — Schedule</title>
+    <title>Nemo â€” Schedule</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/jpeg" href="tanai.jpg">
+    <link rel="icon" type="image/jpeg" href="Nemoai.jpg">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400&display=swap');
 
@@ -488,15 +488,15 @@
                 <div class="page-title">SCHEDULE</div>
                 <div class="page-sub">EVENT TIMELINE</div>
             </div>
-            <button id="menu-btn" onclick="toggleMenu()">☰</button>
+            <button id="menu-btn" onclick="toggleMenu()">â˜°</button>
         </div>
 
         <div id="nav-menu">
-            <a class="nav-item" href="index.html"><span>🤖</span>AI CHAT</a>
-            <a class="nav-item" href="data.html"><span>🧠</span>KNOWLEDGE</a>
-            <a class="nav-item active" href="schedule.html"><span>📅</span>SCHEDULE</a>
-            <a class="nav-item" href="tasks.html"><span>✅</span>TASKS</a>
-            <a class="nav-item" href="history.html"><span>📜</span>HISTORY</a>
+            <a class="nav-item" href="index.html"><span>ðŸ¤–</span>AI CHAT</a>
+            <a class="nav-item" href="data.html"><span>ðŸ§ </span>KNOWLEDGE</a>
+            <a class="nav-item active" href="schedule.html"><span>ðŸ“…</span>SCHEDULE</a>
+            <a class="nav-item" href="tasks.html"><span>âœ…</span>TASKS</a>
+            <a class="nav-item" href="history.html"><span>ðŸ“œ</span>HISTORY</a>
         </div>
 
         <div id="content">
@@ -536,7 +536,7 @@
                 <div class="form-title">+ ADD EVENT</div>
                 <div>
                     <div class="field-label">Event Title</div>
-                    <input type="text" class="field-input" id="f-title" placeholder="Meeting, Call, Reminder…" />
+                    <input type="text" class="field-input" id="f-title" placeholder="Meeting, Call, Reminderâ€¦" />
                 </div>
                 <div class="grid2">
                     <div>
@@ -550,9 +550,9 @@
                 </div>
                 <div>
                     <div class="field-label">Note (optional)</div>
-                    <input type="text" class="field-input" id="f-note" placeholder="Additional details…" />
+                    <input type="text" class="field-input" id="f-note" placeholder="Additional detailsâ€¦" />
                 </div>
-                <button class="add-btn" onclick="addEvent()">📅 ADD TO SCHEDULE</button>
+                <button class="add-btn" onclick="addEvent()">ðŸ“… ADD TO SCHEDULE</button>
             </div>
 
             <!-- EVENT LIST -->
@@ -613,7 +613,7 @@
         }
 
         function updateStats() {
-            const schedule = LS.get('tan_schedule') || [];
+            const schedule = LS.get('Nemo_schedule') || [];
             const today = new Date().toDateString();
             const tomorrow = new Date(Date.now() + 86400000).toDateString();
             document.getElementById('stat-today').textContent = schedule.filter(e => new Date(e.date).toDateString() === today).length;
@@ -630,7 +630,7 @@
         }
 
         function renderEvents(tab) {
-            const schedule = LS.get('tan_schedule') || [];
+            const schedule = LS.get('Nemo_schedule') || [];
             const list = document.getElementById('event-list');
             const now = new Date();
             const today = now.toDateString();
@@ -643,7 +643,7 @@
             else filtered = [...schedule].sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if (!filtered.length) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div>NO EVENTS<br>${tab.toUpperCase()}</div>`;
+                list.innerHTML = `<div class="empty-state"><div class="empty-icon">ðŸ“…</div>NO EVENTS<br>${tab.toUpperCase()}</div>`;
                 return;
             }
 
@@ -661,7 +661,7 @@
             <div class="event-title">${escHtml(e.title)}</div>
             ${e.note ? `<div class="event-note">${escHtml(e.note)}</div>` : ''}
           </div>
-          <button class="event-del" onclick="deleteEvent(${e.id})">✕</button>
+          <button class="event-del" onclick="deleteEvent(${e.id})">âœ•</button>
         </div>`;
             }).join('');
         }
@@ -674,9 +674,9 @@
             if (!title) { showToast('ENTER EVENT TITLE'); return; }
             if (!date) { showToast('SELECT DATE'); return; }
 
-            const schedule = LS.get('tan_schedule') || [];
+            const schedule = LS.get('Nemo_schedule') || [];
             schedule.push({ id: Date.now(), title, date, time, note, created: new Date().toISOString() });
-            LS.set('tan_schedule', schedule);
+            LS.set('Nemo_schedule', schedule);
 
             document.getElementById('f-title').value = '';
             document.getElementById('f-time').value = '';
@@ -688,9 +688,9 @@
         }
 
         function deleteEvent(id) {
-            let schedule = LS.get('tan_schedule') || [];
+            let schedule = LS.get('Nemo_schedule') || [];
             schedule = schedule.filter(e => e.id !== id);
-            LS.set('tan_schedule', schedule);
+            LS.set('Nemo_schedule', schedule);
             updateStats();
             renderEvents(currentTab);
             showToast('EVENT DELETED');

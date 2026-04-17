@@ -4,88 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Tan — Personal AI Assistant</title>
+    <title>Nemo — AI Mobile Assistant</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/jpeg" href="tanai.jpg">
+    <link rel="icon" type="image/jpeg" href="tan.jpg">
     <style>
-        /* PASSWORD OVERLAY */
-        #auth-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        #auth-overlay.hidden { display: none; }
-
-        .auth-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 30px;
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
-            box-shadow: var(--glow-strong);
-        }
-
-        .auth-logo {
-            font-family: var(--font-hud);
-            font-size: 24px;
-            color: var(--accent);
-            margin-bottom: 20px;
-            letter-spacing: 5px;
-        }
-
-        #input-area {
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.95);
-            border-top: 1px solid var(--border);
-            position: sticky;
-            bottom: 0;
-            z-index: 40;
-            padding-bottom: env(safe-area-inset-bottom, 10px);
-        }
-
-        .auth-input {
-            width: 100%;
-            background: rgba(0, 200, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            color: var(--text);
-            font-family: var(--font-mono);
-            text-align: center;
-            margin-bottom: 15px;
-            outline: none;
-        }
-
-        .auth-btn {
-            width: 100%;
-            background: var(--accent);
-            color: var(--bg);
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-family: var(--font-hud);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .auth-btn:hover {
-            box-shadow: var(--glow);
-            transform: translateY(-2px);
-        }
-
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400&display=swap');
 
         :root {
@@ -101,7 +25,6 @@
             --danger: #ff3366;
             --warn: #ffaa00;
             --glow: 0 0 20px rgba(0, 200, 255, 0.3);
-            --glow-strong: 0 0 40px rgba(0, 200, 255, 0.5);
             --font-hud: 'Rajdhani', sans-serif;
             --font-mono: 'Share Tech Mono', monospace;
             --font-body: 'Exo 2', sans-serif;
@@ -117,23 +40,22 @@
         html,
         body {
             height: 100%;
+            width: 100%;
+            overflow: hidden;
             background: var(--bg);
             color: var(--text);
             font-family: var(--font-body);
-            overflow: hidden;
         }
 
-        /* ── HUD SCANLINE BACKGROUND ── */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 200, 255, 0.012) 2px, rgba(0, 200, 255, 0.012) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 200, 255, 0.01) 2px, rgba(0, 200, 255, 0.01) 4px);
             pointer-events: none;
             z-index: 9999;
         }
 
-        /* ── LAYOUT ── */
         #app {
             display: flex;
             flex-direction: column;
@@ -147,1280 +69,427 @@
             position: relative;
         }
 
+        /* ── AUTH ── */
+        #auth-overlay {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #auth-overlay.hidden { display: none; }
+
+        .auth-card {
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .auth-logo {
+            font-family: var(--font-hud);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 8px;
+            margin-bottom: 30px;
+            text-shadow: var(--glow);
+        }
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            color: #fff;
+            text-align: center;
+            font-family: var(--font-mono);
+            outline: none;
+            margin-bottom: 12px;
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-family: var(--font-hud);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
         /* ── TOP BAR ── */
         #topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px 8px;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, rgba(0, 200, 255, 0.05) 0%, transparent 100%);
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        #topbar::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 10%;
-            right: 10%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.6;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo-hex {
-            width: 32px;
-            height: 32px;
-            position: relative;
-        }
-
-        .logo-hex svg {
-            width: 100%;
-            height: 100%;
+            z-index: 50;
         }
 
         .logo-text {
             font-family: var(--font-hud);
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            letter-spacing: 4px;
             color: var(--accent);
-            text-shadow: var(--glow);
+            letter-spacing: 3px;
         }
 
-        .logo-sub {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            margin-top: -2px;
-        }
-
-        #status-badge {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: var(--font-mono);
-            font-size: 9px;
-            color: var(--text-dim);
-            letter-spacing: 1.5px;
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent3);
-            box-shadow: 0 0 8px var(--accent3);
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1)
-            }
-
-            50% {
-                opacity: 0.4;
-                transform: scale(0.7)
-            }
-        }
-
-        #menu-btn {
-            background: none;
+        #lang-toggle {
+            background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 6px 10px;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        #menu-btn:hover {
-            border-color: var(--accent);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
             color: var(--accent);
+            cursor: pointer;
         }
 
         /* ── AVATAR AREA ── */
         #avatar-area {
-            flex-shrink: 0;
+            height: 220px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 14px 16px 10px;
+            justify-content: center;
             position: relative;
+            background: radial-gradient(circle at center, rgba(0, 200, 255, 0.05) 0%, transparent 70%);
         }
 
         .orbit-container {
+            width: 140px;
+            height: 140px;
             position: relative;
-            width: 120px;
-            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .orbit-ring {
             position: absolute;
-            inset: 0;
+            border: 1px solid rgba(0, 200, 255, 0.15);
             border-radius: 50%;
-            border: 1px solid transparent;
-            animation: orbit-spin 8s linear infinite;
+            animation: rotate 10s linear infinite;
         }
 
-        .orbit-ring:nth-child(1) {
-            border-color: rgba(0, 200, 255, 0.25);
-            animation-duration: 6s;
-        }
-
-        .orbit-ring:nth-child(2) {
-            inset: 8px;
-            border-color: rgba(0, 102, 255, 0.2);
-            animation-direction: reverse;
-            animation-duration: 9s;
-        }
-
-        .orbit-ring:nth-child(3) {
-            inset: 16px;
-            border-color: rgba(0, 255, 170, 0.15);
-            animation-duration: 12s;
-        }
-
-        .orbit-ring::after {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        .orbit-ring:nth-child(2)::after {
-            background: var(--accent2);
-            box-shadow: 0 0 8px var(--accent2);
-        }
-
-        .orbit-ring:nth-child(3)::after {
-            background: var(--accent3);
-            box-shadow: 0 0 8px var(--accent3);
-        }
-
-        @keyframes orbit-spin {
-            from {
-                transform: rotate(0deg)
-            }
-
-            to {
-                transform: rotate(360deg)
-            }
-        }
+        .orbit-ring:nth-child(1) { width: 100%; height: 100%; }
+        .orbit-ring:nth-child(2) { width: 120%; height: 120%; animation-direction: reverse; }
+        
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .avatar-core {
-            position: absolute;
-            inset: 24px;
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
             background: #000;
-            border: 1px solid rgba(0, 200, 255, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.3), inset 0 0 20px rgba(0, 200, 255, 0.2);
-        }
-
-        #tan-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
             border-radius: 50%;
+            border: 2px solid var(--accent);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.4);
+            z-index: 20;
+            cursor: pointer;
         }
 
-        /* SPEAKING ANIMATION */
-        .avatar-core.speaking {
-            animation: avatar-speak 0.3s ease-in-out infinite alternate;
-            box-shadow: 0 0 40px rgba(0, 200, 255, 0.5), inset 0 0 25px rgba(0, 200, 255, 0.2);
-        }
-
-        /* SPEAKING ANIMATION */
-        .avatar-core.speaking {
-            animation: avatar-speak 0.3s ease-in-out infinite alternate;
-            box-shadow: 0 0 40px rgba(0, 200, 255, 0.5), inset 0 0 25px rgba(0, 200, 255, 0.2);
-        }
-
-        @keyframes avatar-speak {
-            from {
-                box-shadow: 0 0 30px rgba(0, 200, 255, 0.3), inset 0 0 20px rgba(0, 200, 255, 0.1);
-            }
-
-            to {
-                box-shadow: 0 0 55px rgba(0, 200, 255, 0.7), inset 0 0 30px rgba(0, 200, 255, 0.3);
-            }
-        }
-
-        /* LISTENING ANIMATION */
-        .avatar-core.listening {
-            animation: avatar-listen 0.6s ease-in-out infinite alternate;
-            box-shadow: 0 0 40px rgba(0, 255, 170, 0.4), inset 0 0 25px rgba(0, 255, 170, 0.15);
-            border-color: rgba(0, 255, 170, 0.5);
-        }
-
-        @keyframes avatar-listen {
-            from {
-                box-shadow: 0 0 25px rgba(0, 255, 170, 0.3), inset 0 0 15px rgba(0, 255, 170, 0.1);
-            }
-
-            to {
-                box-shadow: 0 0 50px rgba(0, 255, 170, 0.6), inset 0 0 30px rgba(0, 255, 170, 0.25);
-            }
+        #nemo-video {
+            width: 140%;
+            height: 140%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            pointer-events: none;
         }
 
         #state-label {
             font-family: var(--font-mono);
-            font-size: 9px;
-            letter-spacing: 2.5px;
+            font-size: 10px;
+            margin-top: 15px;
             color: var(--text-dim);
-            margin-top: 8px;
-            transition: color 0.3s;
-            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        #state-label.listening {
-            color: var(--accent3);
-            text-shadow: 0 0 10px var(--accent3);
-        }
+        .active-listening #state-label { color: var(--accent3); text-shadow: 0 0 8px var(--accent3); }
 
-        #state-label.speaking {
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--accent);
-        }
-
-        /* WAVE BARS */
-        #wave-bars {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            height: 18px;
-            margin-top: 4px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        #wave-bars.active {
-            opacity: 1;
-        }
-
-        .wave-bar {
-            width: 3px;
-            border-radius: 2px;
-            background: var(--accent3);
-            box-shadow: 0 0 6px var(--accent3);
-            animation: wave-anim 0.6s ease-in-out infinite alternate;
-        }
-
-        .wave-bar:nth-child(1) {
-            height: 4px;
-            animation-delay: 0s
-        }
-
-        .wave-bar:nth-child(2) {
-            height: 10px;
-            animation-delay: 0.1s
-        }
-
-        .wave-bar:nth-child(3) {
-            height: 16px;
-            animation-delay: 0.2s
-        }
-
-        .wave-bar:nth-child(4) {
-            height: 10px;
-            animation-delay: 0.3s
-        }
-
-        .wave-bar:nth-child(5) {
-            height: 6px;
-            animation-delay: 0.4s
-        }
-
-        .wave-bar:nth-child(6) {
-            height: 12px;
-            animation-delay: 0.15s
-        }
-
-        .wave-bar:nth-child(7) {
-            height: 8px;
-            animation-delay: 0.25s
-        }
-
-        @keyframes wave-anim {
-            from {
-                transform: scaleY(0.3)
-            }
-
-            to {
-                transform: scaleY(1)
-            }
-        }
-
-        /* ── MESSAGES AREA ── */
+        /* ── MESSAGES ── */
         #messages {
             flex: 1;
             overflow-y: auto;
-            padding: 8px 14px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            scroll-behavior: smooth;
-        }
-
-        #messages::-webkit-scrollbar {
-            width: 3px;
-        }
-
-        #messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        #messages::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
+            gap: 12px;
         }
 
         .msg {
-            max-width: 88%;
-            padding: 10px 13px;
-            border-radius: 12px;
-            font-size: 13.5px;
-            line-height: 1.55;
-            animation: msg-in 0.25s ease-out;
-            position: relative;
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: fadeUp 0.3s ease-out;
         }
 
-        @keyframes msg-in {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: none
-            }
-        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .msg.user {
             align-self: flex-end;
-            background: linear-gradient(135deg, rgba(0, 102, 255, 0.35), rgba(0, 102, 255, 0.2));
-            border: 1px solid rgba(0, 102, 255, 0.4);
-            color: #ffffff;
-            border-bottom-right-radius: 3px;
+            background: var(--accent2);
+            color: #fff;
+            border-bottom-right-radius: 2px;
         }
 
         .msg.ai {
             align-self: flex-start;
-            background: linear-gradient(135deg, rgba(0, 200, 255, 0.08), rgba(0, 200, 255, 0.03));
+            background: var(--surface);
             border: 1px solid var(--border);
-            color: var(--text);
-            border-bottom-left-radius: 3px;
-        }
-
-        .msg.ai::before {
-            content: 'TAN';
-            display: block;
-            font-family: var(--font-mono);
-            font-size: 8px;
-            color: var(--accent);
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .msg.system {
-            align-self: center;
-            background: rgba(0, 200, 255, 0.05);
-            border: 1px solid rgba(0, 200, 255, 0.1);
-            color: var(--text-dim);
-            font-family: var(--font-mono);
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-align: center;
-            padding: 6px 14px;
-            max-width: 100%;
-        }
-
-        .msg.loading {
-            align-self: flex-start;
-        }
-
-        .typing-dots span {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            margin: 0 2px;
-            animation: typing 1.2s ease-in-out infinite;
-        }
-
-        .typing-dots span:nth-child(2) {
-            animation-delay: 0.2s
-        }
-
-        .typing-dots span:nth-child(3) {
-            animation-delay: 0.4s
-        }
-
-        @keyframes typing {
-
-            0%,
-            60%,
-            100% {
-                opacity: 0.2;
-                transform: translateY(0)
-            }
-
-            30% {
-                opacity: 1;
-                transform: translateY(-4px)
-            }
+            color: #fff;
+            border-bottom-left-radius: 2px;
         }
 
         /* ── INPUT AREA ── */
         #input-area {
-            flex-shrink: 0;
-            padding: 10px 14px 14px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.95);
             border-top: 1px solid var(--border);
-            background: linear-gradient(0deg, rgba(0, 200, 255, 0.04) 0%, transparent 100%);
-            position: relative;
-        }
-
-        #input-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 10%;
-            right: 10%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.4;
-        }
-
-        #input-row {
             display: flex;
-            gap: 8px;
-            align-items: flex-end;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom, 12px);
         }
 
         #text-input {
             flex: 1;
-            background: rgba(0, 200, 255, 0.04);
+            background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 11px 14px;
-            color: var(--text);
-            font-family: var(--font-body);
-            font-size: 13.5px;
-            resize: none;
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: #fff;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-
-        #text-input:focus {
-            border-color: rgba(0, 200, 255, 0.35);
-            box-shadow: 0 0 12px rgba(0, 200, 255, 0.1);
-        }
-
-        #text-input::placeholder {
-            color: var(--text-dim);
-        }
-
-        .ctrl-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: rgba(0, 200, 255, 0.05);
-            color: var(--text-dim);
-            font-size: 17px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .ctrl-btn:active {
-            transform: scale(0.92);
+            font-size: 14px;
         }
 
         #mic-btn {
-            border-color: rgba(0, 255, 170, 0.25);
-        }
-
-        #mic-btn:hover,
-        #mic-btn.active {
-            background: rgba(0, 255, 170, 0.12);
-            border-color: var(--accent3);
-            color: var(--accent3);
-            box-shadow: 0 0 12px rgba(0, 255, 170, 0.25);
-        }
-
-        #send-btn:hover,
-        #send-btn.pulse {
-            background: rgba(0, 200, 255, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 12px rgba(0, 200, 255, 0.3);
-        }
-
-        /* ── DROPDOWN MENU ── */
-        #nav-menu {
-            position: absolute;
-            top: 52px;
-            right: 14px;
-            background: #080f18;
-            border: 1px solid rgba(0, 200, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            z-index: 100;
-            min-width: 190px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 200, 255, 0.1);
-            display: none;
-            animation: menu-in 0.18s ease-out;
-        }
-
-        @keyframes menu-in {
-            from {
-                opacity: 0;
-                transform: translateY(-8px) scale(0.97)
-            }
-
-            to {
-                opacity: 1;
-                transform: none
-            }
-        }
-
-        #nav-menu.open {
-            display: block;
-        }
-
-        .nav-item {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 13px 16px;
-            font-family: var(--font-hud);
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 1.5px;
-            color: var(--text-dim);
+            justify-content: center;
+            font-size: 18px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(0, 200, 255, 0.06);
-            text-decoration: none;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
 
-        .nav-item:last-child {
-            border-bottom: none;
+        #mic-btn.active {
+            background: var(--accent3);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent3);
         }
 
-        .nav-item:hover {
-            background: rgba(0, 200, 255, 0.07);
-            color: var(--accent);
+        #toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 255, 170, 0.2); border: 1px solid var(--accent3);
+            border-radius: 8px; padding: 8px 16px; font-family: var(--font-mono); font-size: 11px;
+            color: var(--accent3); opacity: 0; transition: opacity 0.3s; z-index: 500;
         }
-
-        .nav-item .ni {
-            font-size: 15px;
-        }
-
-        .nav-item.active {
-            color: var(--accent);
-            background: rgba(0, 200, 255, 0.06);
-        }
-
-        /* ── QUICK ACTION CHIPS ── */
-        #quick-chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding: 0 0 8px;
-            margin-bottom: 6px;
-            scrollbar-width: none;
-        }
-
-        #quick-chips::-webkit-scrollbar {
-            display: none;
-        }
-
-        .chip {
-            flex-shrink: 0;
-            background: rgba(0, 200, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 5px 11px;
-            font-size: 11px;
-            font-family: var(--font-mono);
-            color: var(--text-dim);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.15s;
-            letter-spacing: 0.5px;
-        }
-
-        .chip:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(0, 200, 255, 0.1);
-        }
+        #toast.show { opacity: 1; }
     </style>
 </head>
 
 <body>
-    <div id="app">
-
-        <!-- TOP BAR -->
-        <div id="topbar">
-            <div class="logo-area">
-                <div class="logo-hex">
-                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="none" stroke="rgba(0,200,255,0.6)"
-                            stroke-width="1" />
-                        <polygon points="16,6 24,11 24,21 16,26 8,21 8,11" fill="none" stroke="rgba(0,200,255,0.3)"
-                            stroke-width="0.5" />
-                        <circle cx="16" cy="16" r="4" fill="rgba(0,200,255,0.3)" stroke="rgba(0,200,255,0.8)"
-                            stroke-width="1" />
-                    </svg>
-                </div>
-                <div>
-                    <div class="logo-text">TAN</div>
-                    <div class="logo-sub">PERSONAL INTELLIGENCE</div>
-                </div>
-            </div>
-            <div id="status-badge">
-                <div class="status-dot"></div>
-                <span id="status-text">ONLINE</span>
-            </div>
-            <button id="menu-btn" onclick="toggleMenu()">☰</button>
+<div id="app">
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-logo">NEMO</div>
+            <input type="password" id="pass-input" class="auth-input" placeholder="ACCESS KEY" onkeydown="if(event.key==='Enter')checkAuth()">
+            <button class="auth-btn" onclick="checkAuth()">AUTHENTICATE</button>
         </div>
-
-        <!-- NAV MENU -->
-        <div id="nav-menu">
-            <a class="nav-item active" href="index.html"><span class="ni">🤖</span>AI CHAT</a>
-            <a class="nav-item" href="data.html"><span class="ni">🧠</span>KNOWLEDGE</a>
-            <a class="nav-item" href="schedule.html"><span class="ni">📅</span>SCHEDULE</a>
-            <a class="nav-item" href="tasks.html"><span class="ni">✅</span>TASKS</a>
-            <a class="nav-item" href="history.html"><span class="ni">📜</span>HISTORY</a>
-        </div>
-
-        <!-- AUTH OVERLAY -->
-        <div id="auth-overlay">
-            <div class="auth-card">
-                <div class="auth-logo">TAN</div>
-                <input type="password" id="pass-input" class="auth-input" placeholder="ACCESS KEY">
-                <button class="auth-btn" onclick="checkAuth()">AUTHENTICATE</button>
-            </div>
-        </div>
-
-        <!-- AVATAR -->
-        <div id="avatar-area">
-            <div class="orbit-container">
-                <div class="orbit-ring"></div>
-                <div class="orbit-ring"></div>
-                <div class="orbit-ring"></div>
-                <div class="avatar-core" id="avatar-core">
-                    <video id="tan-video" src="aitan.mp4" autoplay loop muted playsinline></video>
-                </div>
-            </div>
-            <div id="state-label">IDLE</div>
-            <div id="wave-bars">
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-            </div>
-        </div>
-
-        <!-- MESSAGES -->
-        <div id="messages"></div>
-
-        <!-- INPUT AREA -->
-        <div id="input-area">
-            <div id="quick-chips">
-                <div class="chip" onclick="quickSend('What are my tasks today?')">📋 My tasks</div>
-                <div class="chip" onclick="quickSend('What\'s my schedule tomorrow?')">📅 Tomorrow</div>
-                <div class="chip" onclick="quickSend('What do I like?')">🧠 My profile</div>
-                <div class="chip" onclick="quickSend('What\'s pending?')">⏳ Pending</div>
-                <div class="chip" onclick="quickSend('Motivate me')">⚡ Motivate</div>
-            </div>
-            <div id="input-row">
-                <textarea id="text-input" placeholder="Ask Tan anything…" rows="1" onkeydown="handleKey(event)"
-                    oninput="autoResize(this)"></textarea>
-                <button class="ctrl-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
-                <button class="ctrl-btn" id="send-btn" onclick="sendMessage()">➤</button>
-            </div>
-        </div>
-
     </div>
 
-    <script>
-        /* ============================================================
-           CONFIG — Replace with your actual Groq API key
-           ============================================================ */
-        const CONFIG = {
-            MY_API_KEY: "", // Loaded from Netlify Functions or ENV
-            MODEL: "llama-3.1-8b-instant",
-            WAKE_WORD: "tan",
-            MAX_HISTORY: 15,
-            TTS_ENABLED: true,
-            TTS_LANG: "en-US",
-            TTS_RATE: 0.95,
-            TTS_PITCH: 1.05
+    <div id="topbar">
+        <div class="logo-text">NEMO AI</div>
+        <div id="lang-toggle" onclick="toggleLang()">EN | HI</div>
+    </div>
+
+    <div id="avatar-area">
+        <div class="orbit-container">
+            <div class="orbit-ring"></div>
+            <div class="orbit-ring"></div>
+            <div class="avatar-core" onclick="toggleMic()">
+                <video id="nemo-video" src="aitan.mp4" autoplay loop muted playsinline></video>
+            </div>
+        </div>
+        <div id="state-label">IDLE</div>
+    </div>
+
+    <div id="messages"></div>
+
+    <div id="input-area">
+        <input type="text" id="text-input" placeholder="Talk to Nemo..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <div id="mic-btn" onclick="toggleMic()">🎤</div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    const LS = {
+        get: k => JSON.parse(localStorage.getItem(k)),
+        set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
+    };
+
+    let recognition, isListening = false, pwaListening = false, currentLang = 'en-US';
+
+    function toggleLang() {
+        currentLang = currentLang === 'en-US' ? 'hi-IN' : 'en-US';
+        document.getElementById('lang-toggle').textContent = currentLang === 'en-US' ? 'EN | HI' : 'HI | EN';
+        if (recognition) recognition.lang = currentLang;
+        showToast('LANG: ' + (currentLang === 'en-US' ? 'ENGLISH' : 'HINDI'));
+    }
+
+    function setupSpeech() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) return;
+        recognition = new SR();
+        recognition.lang = currentLang;
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('state-label').textContent = 'LISTENING...';
+            document.body.classList.add('active-listening');
+            document.getElementById('mic-btn').classList.add('active');
         };
 
-        async function checkAuth() {
-            const pass = document.getElementById('pass-input').value;
-            const btn = document.querySelector('.auth-btn');
-            btn.textContent = 'VERIFYING...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch('/.netlify/functions/verify', {
-                    method: 'POST',
-                    body: JSON.stringify({ password: pass })
-                });
-                const data = await res.json();
-                
-                if (data.authorized) {
-                    localStorage.setItem('tan_auth', 'true');
-                    document.getElementById('auth-overlay').classList.add('hidden');
-                    // Request mic permission and start live mode immediately
-                    pwaListening = true;
-                    if (recognition) toggleMic();
-                } else {
-                    alert('ACCESS DENIED: ' + (data.message || 'Invalid Password'));
-                }
-            } catch (e) {
-                alert('Connection Error');
-            } finally {
-                btn.textContent = 'AUTHENTICATE';
-                btn.disabled = false;
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('mic-btn').classList.remove('active');
+            if (pwaListening && !window.speechSynthesis.speaking) {
+                setTimeout(() => { if (pwaListening) recognition.start(); }, 300);
+            } else if (!pwaListening) {
+                document.getElementById('state-label').textContent = 'IDLE';
+                document.body.classList.remove('active-listening');
             }
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    console.log('SW Registered');
-                }).catch(err => console.log('SW Reg Failed', err));
-            });
-        }
-
-        /* ============================================================
-           STATE
-           ============================================================ */
-        let isListening = false;
-        let isSpeaking = false;
-        let recognition = null;
-        let currentUtterance = null;
-        let menuOpen = false;
-        let chatHistory = [];
-
-        /* ============================================================
-           STORAGE HELPERS
-           ============================================================ */
-        const LS = {
-            get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } },
-            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-            getStr: k => localStorage.getItem(k) || ''
         };
 
-        function loadHistory() {
-            chatHistory = LS.get('tan_chat_history') || [];
-        }
-        function saveHistory() {
-            const trimmed = chatHistory.slice(-80);
-            LS.set('tan_chat_history', trimmed);
-        }
-        function getUserContext() {
-            const d = LS.get('tan_user_data') || {};
-            const tasks = LS.get('tan_tasks') || [];
-            const sched = LS.get('tan_schedule') || [];
-            const today = new Date().toDateString();
-            const tomorrow = new Date(Date.now() + 86400000).toDateString();
- 
-            const pending = tasks.filter(t => !t.done).map(t => t.text).join(', ') || 'none';
-            const todaySched = sched.filter(e => new Date(e.date).toDateString() === today).map(e => `${e.time || ''} ${e.title}`).join(', ') || 'nothing';
-            const tomorrowSched = sched.filter(e => new Date(e.date).toDateString() === tomorrow).map(e => `${e.time || ''} ${e.title}`).join(', ') || 'nothing';
- 
-            return `You are Tan, a personal AI assistant. Be concise, smart, and friendly.
- USER PROFILE:
- - Name: ${d.name || 'User'}
- - Goals: ${d.goals || 'not set'}
- - Preferences: ${d.preferences || 'not set'}
- - Notes: ${d.notes || 'none'}
- TODAY (${today}):
- - Schedule: ${todaySched}
- - Pending tasks: ${pending}
- TOMORROW (${tomorrow}):
- - Schedule: ${tomorrowSched}
- Always respond naturally and helpfully using this context.`;
-         }
-
-        /* ============================================================
-           INTENT DETECTION
-           ============================================================ */
-        const INTENTS = [
-            {
-                name: 'add_task',
-                patterns: [/add task[:\s]+(.+)/i, /remind me to (.+)/i, /create task[:\s]+(.+)/i, /task[:\s]+add (.+)/i],
-                handler: (match) => {
-                    const text = match[1].trim();
-                    const tasks = LS.get('tan_tasks') || [];
-                    tasks.push({ id: Date.now(), text, done: false, created: new Date().toISOString() });
-                    LS.set('tan_tasks', tasks);
-                    return `✅ Task added: "${text}"`;
+        recognition.onresult = e => {
+            const transcript = e.results[e.results.length-1][0].transcript.toLowerCase();
+            document.getElementById('text-input').value = transcript;
+            
+            if (e.results[e.results.length-1].isFinal) {
+                if (transcript.includes('bye') || transcript.includes('bye nemo') || transcript.includes('alvida')) {
+                    pwaListening = false;
+                    recognition.stop();
+                    speak("Goodbye! I'm here if you need me.");
+                    return;
                 }
-            },
-            {
-                name: 'view_tasks',
-                patterns: [/what.*tasks?/i, /show.*tasks?/i, /my tasks?/i, /pending tasks?/i, /list tasks?/i],
-                handler: () => {
-                    const tasks = LS.get('tan_tasks') || [];
-                    const pending = tasks.filter(t => !t.done);
-                    const done = tasks.filter(t => t.done);
-                    if (!tasks.length) return "You have no tasks yet. Say 'add task: [task name]' to add one.";
-                    let r = `📋 Tasks — ${pending.length} pending, ${done.length} done\n`;
-                    pending.forEach((t, i) => r += `\n${i + 1}. ⬜ ${t.text}`);
-                    if (done.length) done.forEach((t, i) => r += `\n${pending.length + i + 1}. ✅ ~~${t.text}~~`);
-                    return r;
-                }
-            },
-            {
-                name: 'add_schedule',
-                patterns: [
-                    /add (?:to )?(?:my )?(?:schedule|calendar)[:\s]+(.+)/i,
-                    /schedule (.+)/i,
-                    /add (?:meeting|event|appointment)[:\s]+(.+)/i,
-                    /(.+) (?:at|on) (\d{1,2}(?::\d{2})?(?:am|pm)?)/i
-                ],
-                handler: (match, rawInput) => {
-                    const schedule = LS.get('tan_schedule') || [];
-                    let title = '', date = '', time = '';
-
-                    // Try to parse date keywords
-                    const lower = rawInput.toLowerCase();
-                    const today = new Date();
-                    const tomorrow = new Date(Date.now() + 86400000);
-
-                    if (lower.includes('tomorrow')) date = tomorrow.toISOString().split('T')[0];
-                    else if (lower.includes('today')) date = today.toISOString().split('T')[0];
-                    else date = today.toISOString().split('T')[0];
-
-                    // Extract time
-                    const timeMatch = rawInput.match(/(\d{1,2}(?::\d{2})?)\s*(?:am|pm|AM|PM)?/);
-                    if (timeMatch) time = timeMatch[0];
-
-                    // Extract title
-                    title = rawInput.replace(/add (to )?(my )?(schedule|calendar|meeting|event|appointment)[:, ]*/i, '')
-                        .replace(/tomorrow|today/i, '').replace(/(at|on) [\d:]+\s*(am|pm)?/i, '').trim();
-                    if (!title) title = match[1] ? match[1].trim() : rawInput;
-
-                    schedule.push({ id: Date.now(), title, date, time, created: new Date().toISOString() });
-                    LS.set('tan_schedule', schedule);
-                    return `📅 Added to schedule: "${title}" on ${date}${time ? ' at ' + time : ''}`;
-                }
-            },
-            {
-                name: 'view_schedule_today',
-                patterns: [/today.*schedule/i, /schedule.*today/i, /what.*today/i, /plans.*today/i],
-                handler: () => {
-                    const schedule = LS.get('tan_schedule') || [];
-                    const today = new Date().toDateString();
-                    const events = schedule.filter(e => new Date(e.date).toDateString() === today);
-                    if (!events.length) return "📅 Your schedule today is clear — no events.";
-                    return `📅 Today's schedule:\n${events.map(e => `• ${e.time || '–'} ${e.title}`).join('\n')}`;
-                }
-            },
-            {
-                name: 'view_schedule_tomorrow',
-                patterns: [/tomorrow.*schedule/i, /schedule.*tomorrow/i, /what.*tomorrow/i, /plans.*tomorrow/i],
-                handler: () => {
-                    const schedule = LS.get('tan_schedule') || [];
-                    const tomorrow = new Date(Date.now() + 86400000).toDateString();
-                    const events = schedule.filter(e => new Date(e.date).toDateString() === tomorrow);
-                    if (!events.length) return "📅 Nothing scheduled for tomorrow yet.";
-                    return `📅 Tomorrow's schedule:\n${events.map(e => `• ${e.time || '–'} ${e.title}`).join('\n')}`;
-                }
-            },
-            {
-                name: 'view_profile',
-                patterns: [/what do i like/i, /my profile/i, /who am i/i, /my preferences/i, /tell me about me/i, /my goals/i],
-                handler: () => {
-                    const d = LS.get('tan_user_data') || {};
-                    if (!d.name) return "I don't have your profile yet. Go to Knowledge Base to set it up!";
-                    return `🧠 Your profile:\n👤 Name: ${d.name}\n🎯 Goals: ${d.goals || '–'}\n❤️ Preferences: ${d.preferences || '–'}\n📝 Notes: ${d.notes || '–'}`;
-                }
+                sendMessage(transcript);
             }
-        ];
+        };
+    }
 
-        function detectIntent(input) {
-            for (const intent of INTENTS) {
-                for (const pattern of intent.patterns) {
-                    const match = input.match(pattern);
-                    if (match) return { intent, match };
-                }
-            }
-            return null;
-        }
-
-        /* ============================================================
-           GROQ API
-           ============================================================ */
-        async function callGroq(userMsg) {
-            const systemPrompt = getUserContext();
-            const recentHistory = chatHistory.slice(-CONFIG.MAX_HISTORY);
-
-            const messages = [
-                { role: "system", content: systemPrompt },
-                ...recentHistory.map(m => ({ role: m.role, content: m.content })),
-                { role: "user", content: userMsg }
-            ];
-
-            const res = await fetch("/.netlify/functions/groq", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: CONFIG.MODEL,
-                    messages,
-                    max_tokens: 500,
-                    temperature: 0.75
-                })
+    async function sendMessage(text) {
+        const input = document.getElementById('text-input');
+        const msg = text || input.value.trim();
+        if (!msg) return;
+        
+        input.value = '';
+        addMessage('user', msg);
+        
+        const history = LS.get('nemo_chat_history') || [];
+        history.push({ role: 'user', content: msg });
+        
+        try {
+            document.getElementById('state-label').textContent = 'THINKING...';
+            const res = await fetch('/.netlify/functions/groq', {
+                method: 'POST',
+                body: JSON.stringify({ messages: history.slice(-6) })
             });
-
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.error?.message || `API error ${res.status}`);
-            }
             const data = await res.json();
-            return data.choices[0].message.content.trim();
+            const reply = data.choices[0].message.content;
+            
+            addMessage('ai', reply);
+            history.push({ role: 'assistant', content: reply });
+            LS.set('nemo_chat_history', history.slice(-20));
+            speak(reply);
+        } catch (e) {
+            addMessage('ai', 'Connection lost.');
+        } finally {
+            if (!pwaListening) document.getElementById('state-label').textContent = 'IDLE';
         }
+    }
 
-        /* ============================================================
-           SEND MESSAGE
-           ============================================================ */
-        async function sendMessage(overrideText) {
-            const input = document.getElementById('text-input');
-            const text = (overrideText || input.value).trim();
-            if (!text) return;
-
-            input.value = '';
-            input.style.height = '';
-            addMessage('user', text);
-            chatHistory.push({ role: 'user', content: text });
-
-            // Intent check
-            const detected = detectIntent(text);
-            if (detected) {
-                const localResp = detected.intent.handler(detected.match, text);
-                addMessage('ai', localResp);
-                chatHistory.push({ role: 'assistant', content: localResp });
-                saveHistory();
-                speak(localResp);
-                return;
-            }
-
-            // AI fallback
-            const loadId = addLoading();
-            setAvatarState('thinking');
-
-            try {
-                const reply = await callGroq(text);
-                removeLoading(loadId);
-                addMessage('ai', reply);
-                chatHistory.push({ role: 'assistant', content: reply });
-                saveHistory();
-                speak(reply);
-            } catch (err) {
-                removeLoading(loadId);
-                const errMsg = `⚠️ ${err.message}`;
-                addMessage('ai', errMsg);
-                setAvatarState('idle');
-                speak("Sorry, I encountered an error.");
-            }
-        }
-
-        function quickSend(text) {
-            document.getElementById('text-input').value = text;
-            sendMessage();
-        }
-
-        /* ============================================================
-           MESSAGE RENDERING
-           ============================================================ */
-        let loadingCounter = 0;
-        function addMessage(role, text) {
-            const wrap = document.getElementById('messages');
-            const div = document.createElement('div');
-            div.className = `msg ${role}`;
-            div.textContent = text;
-            wrap.appendChild(div);
-            wrap.scrollTop = wrap.scrollHeight;
-            return div;
-        }
-        function addLoading() {
-            const wrap = document.getElementById('messages');
-            const id = ++loadingCounter;
-            const div = document.createElement('div');
-            div.className = 'msg ai loading';
-            div.id = `load-${id}`;
-            div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-            wrap.appendChild(div);
-            wrap.scrollTop = wrap.scrollHeight;
-            return id;
-        }
-        function removeLoading(id) {
-            const el = document.getElementById(`load-${id}`);
-            if (el) el.remove();
-        }
-
-        /* ============================================================
-           AVATAR STATES
-           ============================================================ */
-        function setAvatarState(state) {
-            const core = document.getElementById('avatar-core');
-            const label = document.getElementById('state-label');
-            const waveBars = document.getElementById('wave-bars');
-            core.className = 'avatar-core';
-            label.className = '';
-            waveBars.className = 'wave-bars';
-
-            if (state === 'listening') {
-                core.classList.add('listening');
-                label.classList.add('listening');
-                label.textContent = 'LISTENING';
-                waveBars.className = 'wave-bars active';
-                waveBars.style.display = 'flex';
-                waveBars.classList.add('active');
-                document.getElementById('wave-bars').style.opacity = '1';
-            } else if (state === 'speaking') {
-                core.classList.add('speaking');
-                label.classList.add('speaking');
-                label.textContent = 'SPEAKING';
-                document.getElementById('wave-bars').style.opacity = '0';
-            } else if (state === 'thinking') {
-                label.textContent = 'THINKING';
-                document.getElementById('wave-bars').style.opacity = '0';
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
+        const voices = window.speechSynthesis.getVoices();
+        utter.voice = voices.find(v => v.name.includes('Male') || v.name.includes('David')) || voices[0];
+        utter.lang = currentLang;
+        utter.onstart = () => {
+            document.getElementById('state-label').textContent = 'SPEAKING...';
+            if (isListening) recognition.stop();
+        };
+        utter.onend = () => {
+            if (pwaListening) {
+                setTimeout(() => { if (pwaListening) recognition.start(); }, 500);
             } else {
-                label.textContent = 'IDLE';
-                document.getElementById('wave-bars').style.opacity = '0';
+                document.getElementById('state-label').textContent = 'IDLE';
             }
+        };
+        window.speechSynthesis.speak(utter);
+    }
+
+    function toggleMic() {
+        if (isListening) { pwaListening = false; recognition.stop(); }
+        else { pwaListening = true; recognition.start(); }
+    }
+
+    function addMessage(role, text) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + role;
+        div.textContent = text;
+        const box = document.getElementById('messages');
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function checkAuth() {
+        const pass = document.getElementById('pass-input').value;
+        const res = await fetch('/.netlify/functions/verify', { method: 'POST', body: JSON.stringify({ password: pass }) });
+        const data = await res.json();
+        if (data.authorized) {
+            localStorage.setItem('nemo_auth', 'true');
+            document.getElementById('auth-overlay').classList.add('hidden');
+            setTimeout(() => { pwaListening = true; recognition.start(); }, 1000);
+        } else alert('Access Denied');
+    }
+
+    function showToast(m) {
+        const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    window.onload = () => {
+        if (localStorage.getItem('nemo_auth') === 'true') {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            setTimeout(() => { pwaListening = true; recognition.start(); }, 1500);
         }
-
-        /* ============================================================
-           SPEECH RECOGNITION
-           ============================================================ */
-        let silTimer = null;
-        let pwaListening = false;
-
-        function setupSpeechRecognition() {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) return;
-            recognition = new SR();
-            recognition.lang = CONFIG.TTS_LANG;
-            recognition.continuous = false;
-            recognition.interimResults = true;
-
-            recognition.onstart = () => {
-                isListening = true;
-                pwaListening = true;
-                setAvatarState('listening');
-                document.getElementById('mic-btn').classList.add('active');
-            };
-            
-            recognition.onend = () => {
-                isListening = false;
-                document.getElementById('mic-btn').classList.remove('active');
-                if (pwaListening && avatarState !== 'speaking' && avatarState !== 'thinking') {
-                    // Automatically restart listening if in "live call" mode
-                    setTimeout(() => {
-                        if (!isListening && pwaListening) recognition.start();
-                    }, 300);
-                } else {
-                    setAvatarState('idle');
-                }
-            };
-
-            recognition.onerror = (e) => {
-                console.error("SR Error", e.error);
-                isListening = false;
-                if (e.error === 'not-allowed') pwaListening = false;
-            };
-
-            recognition.onresult = (e) => {
-                const results = Array.from(e.results);
-                const transcript = results[results.length-1][0].transcript.toLowerCase().trim();
-                const isFinal = e.results[e.results.length - 1].isFinal;
-                
-                document.getElementById('text-input').value = transcript;
-                
-                if (isFinal) {
-                    const wakeWords = ['tan', 'hi tan', 'hey tan', 'hey tanai', 'yo tan'];
-                    const foundWake = wakeWords.some(w => transcript.includes(w));
-                    
-                    if (foundWake) {
-                        let cmd = transcript;
-                        wakeWords.forEach(w => {
-                            if (cmd.startsWith(w)) cmd = cmd.slice(w.length).trim();
-                        });
-                        sendMessage(cmd || "Yes?");
-                    } else if (pwaListening && transcript.length > 1) {
-                        // In live call mode, if a sentence is complete, just respond
-                        sendMessage(transcript);
-                    }
-                }
-            };
-        }
-
-        function toggleMic() {
-            if (!recognition) {
-                addMessage('system', 'Speech recognition not supported.');
-                return;
-            }
-            if (isListening) { 
-                pwaListening = false;
-                recognition.stop(); 
-            }
-            else { 
-                pwaListening = true;
-                recognition.start(); 
-            }
-        }
-
-        /* ============================================================
-           TEXT TO SPEECH
-           ============================================================ */
-        function findMaleVoice() {
-            const voices = window.speechSynthesis.getVoices();
-            // Look for Google UK English Male, Microsoft David, etc. or any with 'male' in name
-            let male = voices.find(v => (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('google uk english')) && v.lang.startsWith('en'));
-            return male || voices.find(v => v.lang.startsWith('en'));
-        }
-
-        function speak(text) {
-            if (!CONFIG.TTS_ENABLED || !window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
-            
-            const clean = text.replace(/[🤖📋📅✅⬜⚠️🧠👤🎯❤️📝•–]/g, '').replace(/~~(.+?)~~/g, '$1').trim();
-            const utter = new SpeechSynthesisUtterance(clean);
-            
-            utter.voice = findMaleVoice();
-            utter.lang = CONFIG.TTS_LANG;
-            utter.rate = CONFIG.TTS_RATE;
-            utter.pitch = 0.9; // Slightly lower for more masculine feel
-            
-            utter.onstart = () => {
-                setAvatarState('speaking');
-                if (isListening) recognition.stop(); // Pause listening while speaking
-            };
-            
-            utter.onend = () => {
-                setAvatarState('idle');
-                if (pwaListening) {
-                    setTimeout(() => { if (pwaListening) recognition.start(); }, 500);
-                }
-            };
-            
-            utter.onerror = () => setAvatarState('idle');
-            window.speechSynthesis.speak(utter);
-        }
-
-        // Voice list might need time to load
-        if (window.speechSynthesis) {
-            if (speechSynthesis.onvoiceschanged !== undefined) {
-                speechSynthesis.onvoiceschanged = findMaleVoice;
-            }
-        }
-
-        /* ============================================================
-           UI HELPERS
-           ============================================================ */
-        function handleKey(e) {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-        }
-        function autoResize(el) {
-            el.style.height = ''; el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-        }
-        function toggleMenu() {
-            menuOpen = !menuOpen;
-            document.getElementById('nav-menu').classList.toggle('open', menuOpen);
-        }
-        document.addEventListener('click', e => {
-            if (menuOpen && !e.target.closest('#nav-menu') && !e.target.closest('#menu-btn')) {
-                menuOpen = false;
-                document.getElementById('nav-menu').classList.remove('open');
-            }
-        });
-
-        /* ============================================================
-           INIT
-           ============================================================ */
-        async function init() {
-            if (localStorage.getItem('tan_auth') === 'true') {
-                document.getElementById('auth-overlay').classList.add('hidden');
-                // Auto-start live mode
-                setTimeout(() => {
-                    pwaListening = true;
-                    if (recognition && !isListening) recognition.start();
-                }, 2000);
-            }
-
-            // Ensure video plays
-            const v = document.getElementById('tan-video');
-            if (v) {
-                v.play().catch(() => {
-                    // Autoplay might be blocked until interaction
-                    console.log("Autoplay waiting for interaction");
-                });
-            }
-
-            loadHistory();
-            setupSpeechRecognition();
-
-            const d = LS.get('tan_user_data') || {};
-            const name = d.name ? `, ${d.name}` : '';
-            const now = new Date();
-            const hour = now.getHours();
-            const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-
-            addMessage('system', '— TAN SYSTEM ONLINE —');
-            addMessage('ai', `${greeting}${name}! I'm Tan, your personal AI assistant. I'm ready to help with your tasks, schedule, and more. What can I do for you?`);
-
-            setAvatarState('idle');
-        }
-
-        init();
-    </script>
+        setupSpeech();
+        document.addEventListener('dblclick', () => { if (!pwaListening) { pwaListening = true; recognition.start(); showToast('NEMO AWAKE'); } });
+    };
+</script>
 </body>
-
 </html>
